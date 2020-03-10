@@ -4,9 +4,30 @@ use quinn::{Endpoint, Incoming, ServerConfig, ServerConfigBuilder, TransportConf
 use std::{error::Error, fs, net::SocketAddr, sync::Arc};
 use tokio::fs::File;
 use tokio::io;
+use std::net;
+
+const MAX_DATAGRAM_SIZE: usize = 1350;
+
+fn main() {
+    let mut buf = [0; 65535];
+    let mut out = [0; MAX_DATAGRAM_SIZE];
+    let poll = mio::Poll::new().unwrap();
+    let mut events = mio::Events::with_capacity(1024);
+    let socket = net::UdpSocket::bind("0.0.0.0:54321").unwrap();
+    let socket = mio::net::UdpSocket::from_socket(socket).unwrap();
+    poll.register(
+        &socket,
+        mio::Token(0),
+        mio::Ready::readable(),
+        mio::PollOpt::edge(),
+    )
+    .unwrap();
+    let mut config = quiche::Config::new(quiche::PROTOCOL_VERSION).unwrap();
+
+}
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main1() -> Result<(), Box<dyn std::error::Error>> {
     let server_addr = "0.0.0.0:54321".parse().unwrap();
     let mut incoming = make_server_endpoint(server_addr)?;
 

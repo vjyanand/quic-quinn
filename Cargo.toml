@@ -16,6 +16,9 @@ anyhow = "1.0.22"
 directories = "2.0.0"
 tracing-futures = { version = "0.2.0", default-features = false, features = ["std-future"] }
 unwrap = "1.2.1"
+ring = "0.16"
+mio = "0.6"
+quiche = "0.2.0"
 
 [profile.release]
 opt-level = 3
